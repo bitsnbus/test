@@ -4,9 +4,12 @@
 Briefly describe the purpose of this project.
 
 ## Tech Stack
-- Language: 
-- Framework: 
-- Tools: 
+- Language: TypeScript
+- Framework: React
+- Tools: Vite, GitHub
+
+## Repository
+- URL: https://github.com/bitsnbus/test
 
 ## Project Conventions
 ### Architectural Patterns

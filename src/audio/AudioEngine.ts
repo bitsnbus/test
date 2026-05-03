@@ -15,13 +15,18 @@ export interface AudioTrack {
 export class AudioEngine {
   private context: AudioContext;
   private masterGain: GainNode;
+  private masterAnalyser: AnalyserNode;
   private tracks: Map<string, AudioTrack> = new Map();
   private isPlaying: boolean = false;
 
   constructor() {
     this.context = new (window.AudioContext || (window as any).webkitAudioContext)();
     this.masterGain = this.context.createGain();
-    this.masterGain.connect(this.context.destination);
+    this.masterAnalyser = this.context.createAnalyser();
+    this.masterAnalyser.fftSize = 512;
+    
+    this.masterGain.connect(this.masterAnalyser);
+    this.masterAnalyser.connect(this.context.destination);
   }
 
   public async addTrack(file: File): Promise<string> {
@@ -107,6 +112,10 @@ export class AudioEngine {
 
   public setMasterVolume(volume: number) {
     this.masterGain.gain.setTargetAtTime(volume, this.context.currentTime, 0.01);
+  }
+
+  public getMasterAnalyser(): AnalyserNode {
+    return this.masterAnalyser;
   }
 
   public getTrackAnalyser(id: string): AnalyserNode | null {

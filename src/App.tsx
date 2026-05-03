@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { audioEngine, AudioTrack } from './audio/AudioEngine';
 import { TrackStrip } from './components/TrackStrip';
+import { FFTView } from './components/FFTView';
 import './App.css';
 
 function App() {
@@ -22,7 +23,10 @@ function App() {
   return (
     <div className="app-container">
       <header style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>VIRTUAL STUDIO MIXER</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <h1>VIRTUAL STUDIO MIXER</h1>
+          <FFTView width={200} height={60} />
+        </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button onClick={() => audioEngine.play()}>PLAY</button>
           <button onClick={() => audioEngine.stop()}>STOP</button>

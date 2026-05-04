@@ -3,7 +3,7 @@ export interface AudioTrack {
   name: string;
   source: AudioBufferSourceNode | null;
   gainNode: GainNode;
-  pannerNode: PannerNode;
+  pannerNode: StereoPannerNode;
   analyserNode: AnalyserNode;
   buffer: AudioBuffer | null;
   isMuted: boolean;
@@ -35,10 +35,9 @@ export class AudioEngine {
     const audioBuffer = await this.context.decodeAudioData(arrayBuffer);
 
     const gainNode = this.context.createGain();
-    const pannerNode = this.context.createPanner();
+    const pannerNode = this.context.createStereoPanner();
     const analyserNode = this.context.createAnalyser();
 
-    pannerNode.panningModel = 'equalpower';
     analyserNode.fftSize = 256;
 
     // Routing: Source (created on play) -> Panner -> Gain -> Analyser -> Master
@@ -98,8 +97,40 @@ export class AudioEngine {
     const track = this.tracks.get(id);
     if (track) {
       track.volume = volume;
-      track.gainNode.gain.setTargetAtTime(volume, this.context.currentTime, 0.01);
+      this.updateGains();
     }
+  }
+
+  public toggleTrackMute(id: string) {
+    const track = this.tracks.get(id);
+    if (track) {
+      track.isMuted = !track.isMuted;
+      this.updateGains();
+    }
+  }
+
+  public toggleTrackSolo(id: string) {
+    const track = this.tracks.get(id);
+    if (track) {
+      track.isSolo = !track.isSolo;
+      this.updateGains();
+    }
+  }
+
+  private updateGains() {
+    const soloActive = Array.from(this.tracks.values()).some(t => t.isSolo);
+    
+    this.tracks.forEach(track => {
+      let effectiveVolume = track.volume;
+      
+      if (track.isMuted) {
+        effectiveVolume = 0;
+      } else if (soloActive && !track.isSolo) {
+        effectiveVolume = 0;
+      }
+      
+      track.gainNode.gain.setTargetAtTime(effectiveVolume, this.context.currentTime, 0.01);
+    });
   }
 
   public setTrackPan(id: string, pan: number) {

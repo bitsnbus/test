@@ -20,6 +20,16 @@ export const TrackStrip: React.FC<TrackStripProps> = ({ track, onUpdate }) => {
     onUpdate();
   };
 
+  const handleSoloToggle = () => {
+    audioEngine.toggleTrackSolo(track.id);
+    onUpdate();
+  };
+
+  const handleMuteToggle = () => {
+    audioEngine.toggleTrackMute(track.id);
+    onUpdate();
+  };
+
   return (
     <div className="track-strip">
       <div style={{ fontSize: '10px', fontWeight: 'bold', height: '20px', overflow: 'hidden', width: '100%', textAlign: 'center' }}>
@@ -45,8 +55,18 @@ export const TrackStrip: React.FC<TrackStripProps> = ({ track, onUpdate }) => {
       </div>
 
       <div style={{ display: 'flex', gap: '5px' }}>
-        <button style={{ fontSize: '10px', background: track.isSolo ? 'orange' : '#444' }}>S</button>
-        <button style={{ fontSize: '10px', background: track.isMuted ? 'red' : '#444' }}>M</button>
+        <button 
+          onClick={handleSoloToggle}
+          style={{ fontSize: '10px', background: track.isSolo ? 'orange' : '#444' }}
+        >
+          S
+        </button>
+        <button 
+          onClick={handleMuteToggle}
+          style={{ fontSize: '10px', background: track.isMuted ? 'red' : '#444' }}
+        >
+          M
+        </button>
       </div>
     </div>
   );
